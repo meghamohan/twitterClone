@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Scrolling Nav - Start Bootstrap Template</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap core CSS -->
+    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/scrolling-nav.css" rel="stylesheet">
+    <style>
+      article {
+        display: list-item;
+        font-family: "Helvetica Neue", Roboto, "Segoe UI", Calibri, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+        border-color: #eee #ddd #bbb;
+        border-radius: 5px;
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        margin: 10px 5px;
+        padding: 0 16px 16px 16px;
+      }  
+    </style>
+
+    <script>
+      $(document).ready(function() {
+        function listAllTweets() {
+           $.get('http://localhost:5050/getTweets', function (data, textStatus) {
+             if (textStatus === 'success') {
+               $.each(data, function (key, value) {
+                 let $article = $('<article>');
+                 $article.append('<p> Date: ' + key.split('.')[0] + '</p>');
+                 $article.append('<p> User: ' + value.split('.')[0] + '</p>');
+                 $article.append('<p> Tweet: ' + value.split('.')[1] + '</p>');
+                 $('.TweetSection').append($article);      
+                 //console.log(json.dumps(data));
+               });
+             } else {
+               console.log("No tweets to load");
+             }
+           });
+        }
+        listAllTweets();
+
+        function makeid() {
+          var text = "";
+          var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+          for (var i = 0; i < 5; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+            return text;
+        }
+
+        function saveToFile() {
+          $('#comment').prepend("posted");
+          //let twtList = []
+          let twtDict = {};
+          var d = new Date();
+          var month = d.getMonth()+1;
+          var day = d.getDate();
+          var dateTwt = d.getFullYear() + '/' +
+            ((''+month).length<2 ? '0' : '') + month + '/' +
+            ((''+day).length<2 ? '0' : '') + day;
+          twtDict[dateTwt + '.' + makeid()] = $('#uName').val() + '.' + $('#tweetBox').val();
+          //twtList.push(twtDict);
+          console.log(twtDict);;
+
+          $.ajax({
+            type: 'POST',
+            url: 'http://localhost:5050/tweetPost',
+            data: JSON.stringify(twtDict),
+            dataType: 'json',
+            headers: {'Content-Type': 'application/json'},
+            success: function (data) {
+              data = json.dumps(data.text);
+            },
+	    error: function( jqXhr, textStatus, errorThrown ){
+                console.log( errorThrown );
+            }
+          });
+        }
+        
+        $('#twt').click(function () {
+          saveToFile();
+        });
+      });
+    </script>
+
+
+  </head>
+
+  <body id="page-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">HB Twitter</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#about">About</a>
+            </li>
+            {% block content %}{% endblock %}
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#services">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#contact">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <header class="bg-primary text-white">
+      <div class="container text-center">
+        <h1>Welcome to Twitter</h1>
+        <p class="lead">Tweeeeeeet</p>
+      </div>
+    </header>
+
+    <section id="about">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <h2>New Tweet</h2>
+            <form id="tweetForm">
+              <input type="text" id="uName">
+              <input type="text" id="tweetBox">
+              <input type="submit" id="twt">
+              <label id="comment"></label>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="TweetSection">
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2017</p>
+      </div>
+      <!-- /.container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="static/vendor/jquery/jquery.min.js"></script>
+    <script src="static/vendor/popper/popper.min.js"></script>
+    <script src="static/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom JavaScript for this theme -->
+    <script src="static/js/scrolling-nav.js"></script>
+
+  </body>
+
+</html>
